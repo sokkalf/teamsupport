@@ -87,7 +87,7 @@ view model =
             , style "font-weight" "bold"
             ]
             [ img
-                [ Html.Attributes.src "/img/gyldendal.png"
+                [ Html.Attributes.src "img/gyldendal.png"
                 , style "height" "32px"
                 , style "margin-right" "1em"
                 ]
