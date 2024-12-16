@@ -5234,9 +5234,11 @@ var $author$project$Main$getCurrentTime = function () {
 		$elm$core$Basics$identity,
 		A3($elm$core$Task$map2, $author$project$Main$GotTime, timeZone, currentTime));
 }();
+var $author$project$Main$names = _List_fromArray(
+	['HC', 'Christian', 'Eivind', 'Jonas']);
 var $author$project$Main$init = function (_v0) {
 	return _Utils_Tuple2(
-		{currentName: 'Loading...'},
+		{allNames: $author$project$Main$names, currentName: 'Loading...', showAll: false},
 		$author$project$Main$getCurrentTime);
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
@@ -5484,8 +5486,6 @@ var $elm$core$List$head = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$Main$names = _List_fromArray(
-	['HC', 'Christian', 'Eivind', 'Jonas']);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$core$Basics$composeR = F3(
@@ -5587,29 +5587,48 @@ var $elm$core$Maybe$withDefault = F2(
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		var zone = msg.a;
-		var posix = msg.b;
-		var weekNumber = $justinmimbs$date$Date$weekNumber(
-			A2($justinmimbs$date$Date$fromPosix, zone, posix));
-		var chosenName = function () {
-			var index = A2(
-				$elm$core$Basics$modBy,
-				$elm$core$List$length($author$project$Main$names),
-				weekNumber);
-			return A2(
-				$elm$core$Maybe$withDefault,
-				'No name found',
-				$elm$core$List$head(
-					A2($elm$core$List$drop, index, $author$project$Main$names)));
-		}();
-		return _Utils_Tuple2(
-			_Utils_update(
-				model,
-				{currentName: chosenName}),
-			$elm$core$Platform$Cmd$none);
+		if (msg.$ === 'GotTime') {
+			var zone = msg.a;
+			var posix = msg.b;
+			var weekNumber = $justinmimbs$date$Date$weekNumber(
+				A2($justinmimbs$date$Date$fromPosix, zone, posix));
+			var chosenName = function () {
+				var index = A2(
+					$elm$core$Basics$modBy,
+					$elm$core$List$length($author$project$Main$names),
+					weekNumber);
+				return A2(
+					$elm$core$Maybe$withDefault,
+					'No name found',
+					$elm$core$List$head(
+						A2($elm$core$List$drop, index, $author$project$Main$names)));
+			}();
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{currentName: chosenName}),
+				$elm$core$Platform$Cmd$none);
+		} else {
+			var newVal = msg.a;
+			return _Utils_Tuple2(
+				_Utils_update(
+					model,
+					{showAll: newVal}),
+				$elm$core$Platform$Cmd$none);
+		}
 	});
-var $elm$html$Html$div = _VirtualDom_node('div');
-var $elm$html$Html$img = _VirtualDom_node('img');
+var $author$project$Main$ToggleShowAll = function (a) {
+	return {$: 'ToggleShowAll', a: a};
+};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$html$Html$Attributes$boolProperty = F2(
+	function (key, bool) {
+		return A2(
+			_VirtualDom_property,
+			key,
+			$elm$json$Json$Encode$bool(bool));
+	});
+var $elm$html$Html$Attributes$checked = $elm$html$Html$Attributes$boolProperty('checked');
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $elm$html$Html$Attributes$stringProperty = F2(
 	function (key, string) {
@@ -5618,6 +5637,40 @@ var $elm$html$Html$Attributes$stringProperty = F2(
 			key,
 			$elm$json$Json$Encode$string(string));
 	});
+var $elm$html$Html$Attributes$class = $elm$html$Html$Attributes$stringProperty('className');
+var $elm$html$Html$div = _VirtualDom_node('div');
+var $elm$html$Html$img = _VirtualDom_node('img');
+var $elm$html$Html$input = _VirtualDom_node('input');
+var $elm$html$Html$label = _VirtualDom_node('label');
+var $elm$virtual_dom$VirtualDom$Normal = function (a) {
+	return {$: 'Normal', a: a};
+};
+var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
+var $elm$html$Html$Events$on = F2(
+	function (event, decoder) {
+		return A2(
+			$elm$virtual_dom$VirtualDom$on,
+			event,
+			$elm$virtual_dom$VirtualDom$Normal(decoder));
+	});
+var $elm$json$Json$Decode$field = _Json_decodeField;
+var $elm$json$Json$Decode$at = F2(
+	function (fields, decoder) {
+		return A3($elm$core$List$foldr, $elm$json$Json$Decode$field, decoder, fields);
+	});
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $elm$html$Html$Events$targetChecked = A2(
+	$elm$json$Json$Decode$at,
+	_List_fromArray(
+		['target', 'checked']),
+	$elm$json$Json$Decode$bool);
+var $elm$html$Html$Events$onCheck = function (tagger) {
+	return A2(
+		$elm$html$Html$Events$on,
+		'change',
+		A2($elm$json$Json$Decode$map, tagger, $elm$html$Html$Events$targetChecked));
+};
+var $elm$html$Html$span = _VirtualDom_node('span');
 var $elm$html$Html$Attributes$src = function (url) {
 	return A2(
 		$elm$html$Html$Attributes$stringProperty,
@@ -5628,12 +5681,64 @@ var $elm$virtual_dom$VirtualDom$style = _VirtualDom_style;
 var $elm$html$Html$Attributes$style = $elm$virtual_dom$VirtualDom$style;
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $elm$html$Html$text = $elm$virtual_dom$VirtualDom$text;
+var $elm$html$Html$Attributes$type_ = $elm$html$Html$Attributes$stringProperty('type');
+var $elm$core$List$append = F2(
+	function (xs, ys) {
+		if (!ys.b) {
+			return xs;
+		} else {
+			return A3($elm$core$List$foldr, $elm$core$List$cons, ys, xs);
+		}
+	});
+var $elm$core$List$concat = function (lists) {
+	return A3($elm$core$List$foldr, $elm$core$List$append, _List_Nil, lists);
+};
+var $elm$core$List$concatMap = F2(
+	function (f, list) {
+		return $elm$core$List$concat(
+			A2($elm$core$List$map, f, list));
+	});
+var $elm$html$Html$strong = _VirtualDom_node('strong');
+var $author$project$Main$viewAllNames = function (model) {
+	var nameToHtml = function (name) {
+		return _Utils_eq(name, model.currentName) ? A2(
+			$elm$html$Html$strong,
+			_List_Nil,
+			_List_fromArray(
+				[
+					$elm$html$Html$text(name)
+				])) : $elm$html$Html$text(name);
+	};
+	var namesWithSeparators = function () {
+		var _v0 = model.allNames;
+		if (!_v0.b) {
+			return _List_Nil;
+		} else {
+			var first = _v0.a;
+			var rest = _v0.b;
+			return A2(
+				$elm$core$List$cons,
+				nameToHtml(first),
+				A2(
+					$elm$core$List$concatMap,
+					function (n) {
+						return _List_fromArray(
+							[
+								$elm$html$Html$text(', '),
+								nameToHtml(n)
+							]);
+					},
+					rest));
+		}
+	}();
+	return A2($elm$html$Html$div, _List_Nil, namesWithSeparators);
+};
 var $author$project$Main$view = function (model) {
 	return A2(
 		$elm$html$Html$div,
 		_List_fromArray(
 			[
-				A2($elm$html$Html$Attributes$style, 'height', '100vh'),
+				A2($elm$html$Html$Attributes$style, 'height', '100em'),
 				A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 				A2($elm$html$Html$Attributes$style, 'flex-direction', 'column'),
 				A2($elm$html$Html$Attributes$style, 'margin', '0'),
@@ -5649,7 +5754,7 @@ var $author$project$Main$view = function (model) {
 						A2($elm$html$Html$Attributes$style, 'padding', '1em'),
 						A2($elm$html$Html$Attributes$style, 'display', 'flex'),
 						A2($elm$html$Html$Attributes$style, 'align-items', 'center'),
-						A2($elm$html$Html$Attributes$style, 'justify-content', 'center'),
+						A2($elm$html$Html$Attributes$style, 'justify-content', 'space-between'),
 						A2($elm$html$Html$Attributes$style, 'font-family', 'sans-serif'),
 						A2($elm$html$Html$Attributes$style, 'font-size', '1em'),
 						A2($elm$html$Html$Attributes$style, 'font-weight', 'bold')
@@ -5657,15 +5762,66 @@ var $author$project$Main$view = function (model) {
 				_List_fromArray(
 					[
 						A2(
-						$elm$html$Html$img,
+						$elm$html$Html$div,
 						_List_fromArray(
 							[
-								$elm$html$Html$Attributes$src('img/gyldendal.png'),
-								A2($elm$html$Html$Attributes$style, 'height', '32px'),
-								A2($elm$html$Html$Attributes$style, 'margin-right', '1em')
+								A2($elm$html$Html$Attributes$style, 'display', 'flex'),
+								A2($elm$html$Html$Attributes$style, 'align-items', 'center')
 							]),
-						_List_Nil),
-						$elm$html$Html$text('Spiroobar')
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$img,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$src('img/gyldendal.png'),
+										A2($elm$html$Html$Attributes$style, 'height', '32px'),
+										A2($elm$html$Html$Attributes$style, 'margin-right', '1em')
+									]),
+								_List_Nil),
+								$elm$html$Html$text('Spiroobar')
+							])),
+						A2(
+						$elm$html$Html$div,
+						_List_Nil,
+						_List_fromArray(
+							[
+								A2(
+								$elm$html$Html$span,
+								_List_fromArray(
+									[
+										A2($elm$html$Html$Attributes$style, 'padding-right', '0.75em')
+									]),
+								_List_fromArray(
+									[
+										$elm$html$Html$text('Eivind mode')
+									])),
+								A2(
+								$elm$html$Html$label,
+								_List_fromArray(
+									[
+										$elm$html$Html$Attributes$class('switch')
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$elm$html$Html$input,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$type_('checkbox'),
+												$elm$html$Html$Attributes$checked(model.showAll),
+												$elm$html$Html$Events$onCheck($author$project$Main$ToggleShowAll)
+											]),
+										_List_Nil),
+										A2(
+										$elm$html$Html$span,
+										_List_fromArray(
+											[
+												$elm$html$Html$Attributes$class('slider round')
+											]),
+										_List_Nil)
+									]))
+							]))
 					])),
 				A2(
 				$elm$html$Html$div,
@@ -5680,7 +5836,7 @@ var $author$project$Main$view = function (model) {
 					]),
 				_List_fromArray(
 					[
-						$elm$html$Html$text(model.currentName)
+						model.showAll ? $author$project$Main$viewAllNames(model) : $elm$html$Html$text(model.currentName)
 					]))
 			]));
 };
