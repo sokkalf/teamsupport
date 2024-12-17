@@ -5757,7 +5757,8 @@ var $author$project$Main$view = function (model) {
 						A2($elm$html$Html$Attributes$style, 'justify-content', 'space-between'),
 						A2($elm$html$Html$Attributes$style, 'font-family', 'sans-serif'),
 						A2($elm$html$Html$Attributes$style, 'font-size', '1em'),
-						A2($elm$html$Html$Attributes$style, 'font-weight', 'bold')
+						A2($elm$html$Html$Attributes$style, 'font-weight', 'bold'),
+						$elm$html$Html$Attributes$class('top-bar')
 					]),
 				_List_fromArray(
 					[
