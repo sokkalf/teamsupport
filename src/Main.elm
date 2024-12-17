@@ -98,6 +98,7 @@ view model =
             , style "font-family" "sans-serif"
             , style "font-size" "1em"
             , style "font-weight" "bold"
+            , class "top-bar"
             ]
             [ div
                 [ style "display" "flex"
